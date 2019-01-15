@@ -20,7 +20,7 @@ module.exports = (_, argv) => ({
 				collapseWhitespace: true,
 				removeScriptTypeAttributes: true,
 			},
-		})
+		}),
 	],
 	mode: argv.mode || 'development',
 });
