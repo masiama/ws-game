@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "build": "npx webpack && npx babel server.js --out-file out/server.js",
+    "watch": "webpack -w & npx babel server.js -w --out-file out/server.js",
+    "start": "node out/server.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "babel-loader": "^8.0.5",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1"
+  }
+}
