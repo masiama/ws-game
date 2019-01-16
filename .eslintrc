@@ -1,0 +1,18 @@
+{
+	"parser": "babel-eslint",
+	"plugins": ["prettier", "react", "jsx-a11y", "import"],
+	"extends": [
+		"prettier",
+		"prettier/flowtype",
+		"prettier/react",
+		"airbnb"
+	],
+	"rules": {
+		"quotes": ["error", "single"],
+		"arrow-parens": ["error", "as-needed"],
+		"indent": ["error", "tab"],
+		"no-tabs": ["error", { "allowIndentationTabs": true }],
+		"no-undef": ["off"],
+		"no-console": ["off"]
+	}
+}
