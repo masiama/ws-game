@@ -1,3 +1,4 @@
+// Constants
 export default function() {
 	const width = innerWidth;
 	const height = innerHeight;

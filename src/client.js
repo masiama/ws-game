@@ -7,6 +7,7 @@ const socket = io('http://localhost:1234');
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
+// Enumeration of arrow keys
 const keysEnum = Object.freeze({
 	LEFT: 'ArrowLeft',
 	RIGHT: 'ArrowRight',
@@ -14,7 +15,9 @@ const keysEnum = Object.freeze({
 	DOWN: 'ArrowDown',
 });
 
+// Object of all users
 const users = {};
+// Object for pressed keys
 const keys = {};
 
 const setUser = u => users[u.id] = Box.serialize(u);
@@ -32,12 +35,15 @@ socket.on('allUsers', allUsers => allUsers.map(setUser));
 socket.on('move', setUser);
 
 (function loop() {
+	// Clear canvas
 	context.clearRect(0, 0, canvas.width, canvas.height);
+	// Draw cars
 	Object.values(users).map(box => box.draw(context));
 
+	// draw tack borders
 	drawBorder(context, points);
 	drawBorder(context, points, -1);
-	window.requestAnimationFrame(loop);
+	requestAnimationFrame(loop);
 }());
 
 function init() {
@@ -50,12 +56,14 @@ function init() {
 	me = new Box(socket.id, points[0].x, points[0].y, `hsl(${137.50 * Math.floor(Math.random() * 1000)}deg, 80%, 80%)`);
 	users[me.id] = me;
 
-	window.addEventListener('keydown', e => {
+	// Hande arrow key press
+	addEventListener('keydown', e => {
 		if (Object.values(keysEnum).indexOf(e.key) == -1) return;
 
 		e.preventDefault();
 		keys[e.key] = true;
 
+		// Change car position according to pressed keys
 		if (keysEnum.LEFT in keys && me.x > 0) me.x -= me.speed;
 		if (keysEnum.RIGHT in keys && me.x < config.width - config.carSize) me.x += me.speed;
 		if (keysEnum.UP in keys && me.y > 0) me.y -= me.speed;
@@ -64,7 +72,8 @@ function init() {
 		socket.emit('move', me);
 	});
 
-	window.addEventListener('keyup', e => delete keys[e.key]);
+	// Hnadle arrow key release
+	addEventListener('keyup', e => delete keys[e.key]);
 
 	socket.emit('added', me);
 }
