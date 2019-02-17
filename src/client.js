@@ -20,7 +20,7 @@ const users = {};
 // Object for pressed keys
 const keys = {};
 
-const setUser = u => users[u.id] = Box.serialize(u);
+const setUser = u => (users[u.id] = Box.serialize(u));
 
 let me;
 let connected = false;
@@ -44,7 +44,7 @@ socket.on('move', setUser);
 	drawBorder(context, points);
 	drawBorder(context, points, -1);
 	requestAnimationFrame(loop);
-}());
+})();
 
 function init() {
 	if (connected) return socket.emit('move', me);
@@ -53,7 +53,12 @@ function init() {
 	points = generateTrack();
 	initCanvas(canvas);
 
-	me = new Box(socket.id, points[0].x, points[0].y, `hsl(${137.50 * Math.floor(Math.random() * 1000)}deg, 80%, 80%)`);
+	me = new Box(
+		socket.id,
+		points[0].x,
+		points[0].y,
+		`hsl(${137.5 * Math.floor(Math.random() * 1000)}deg, 80%, 80%)`,
+	);
 	users[me.id] = me;
 
 	// Hande arrow key press
@@ -65,9 +70,11 @@ function init() {
 
 		// Change car position according to pressed keys
 		if (keysEnum.LEFT in keys && me.x > 0) me.x -= me.speed;
-		if (keysEnum.RIGHT in keys && me.x < config.width - config.carSize) me.x += me.speed;
+		if (keysEnum.RIGHT in keys && me.x < config.width - config.carSize)
+			me.x += me.speed;
 		if (keysEnum.UP in keys && me.y > 0) me.y -= me.speed;
-		if (keysEnum.DOWN in keys && me.y < config.height - config.carSize) me.y += me.speed;
+		if (keysEnum.DOWN in keys && me.y < config.height - config.carSize)
+			me.y += me.speed;
 
 		socket.emit('move', me);
 	});
