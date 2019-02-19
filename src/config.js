@@ -1,12 +1,10 @@
 // Constants
 export default function() {
-	const width = innerWidth;
-	const height = innerHeight;
-
+	const height = 300;
 	const entryHeight = 20;
 
 	return {
-		width,
+		width: 600,
 		height,
 		entryWidth: 50,
 		entryHeight,
