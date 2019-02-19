@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "build": "npm run prettier && npx webpack && npx babel src/server.js --out-file out/server.js",
-    "watch": "webpack -w & npx babel src/server/index.js -w --out-file out/server.js",
+    "build": "npm run prettier && npx webpack",
+    "watch": "webpack -w",
     "start": "node out/server.js",
     "prettier": "prettier --write src/*.js",
     "lint": "npx eslint src/*.js"
@@ -26,9 +26,12 @@
   },
   "dependencies": {
     "express": "^4.16.4",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "webpack-dev-server": "^3.1.14"
   },
   "babel": {
-    "presets": ["@babel/preset-env"]
+    "presets": [
+      "@babel/preset-env"
+    ]
   }
 }
