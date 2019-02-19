@@ -29,7 +29,7 @@ const generateBlock = i => {
 		// Get y coordinate of entry
 		const y = (i * config.blockLength + j) * config.entryHeight;
 		// If y is behind canvas
-		if (y > height) break;
+		if (y > config.height) break;
 
 		// Get random entry x coordiante
 		const entry = r(start, end);
