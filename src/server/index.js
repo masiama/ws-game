@@ -4,6 +4,7 @@ import { join } from 'path';
 import http from 'http';
 
 import Box from '../shared/Box';
+import c from '../shared/config';
 import { generateTrack } from '../shared/canvas';
 
 const PORT = 1234;
@@ -11,6 +12,7 @@ const PORT = 1234;
 const app = express();
 const server = http.createServer(app);
 const io = SocketIO(server);
+const config = c();
 
 const sendFile = file => (_, res) =>
 	res.sendFile(file, { root: join(process.cwd(), 'out') });
@@ -25,7 +27,7 @@ const points = generateTrack();
 io.on('connection', socket => {
 	users[socket.id] = new Box(
 		socket.id,
-		points[0].x,
+		points[0].x - config.carSize / 2,
 		points[0].y,
 		`hsl(${137.5 * Math.floor(Math.random() * 1000)}deg, 80%, 80%)`,
 	);

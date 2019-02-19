@@ -17,7 +17,13 @@ export default class Box {
 	draw(ctx) {
 		ctx.beginPath();
 		ctx.fillStyle = this.color;
-		ctx.arc(this.x, this.y + this.width, this.width, 0, 2 * Math.PI);
+		ctx.arc(
+			this.x + this.width,
+			this.y + this.width,
+			this.width,
+			0,
+			2 * Math.PI,
+		);
 		ctx.fill();
 	}
 

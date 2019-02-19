@@ -39,6 +39,22 @@ socket.on('move', setUser);
 (function loop() {
 	// Clear canvas
 	context.clearRect(0, 0, canvas.width, canvas.height);
+
+	if (me) {
+		const newMe = Box.serialize(users[me.id]);
+
+		// Change car position according to pressed keys
+		if (keysEnum.LEFT in keys && newMe.x > 0) newMe.x -= newMe.speed;
+		if (keysEnum.RIGHT in keys && newMe.x < config.width - config.carSize)
+			newMe.x += newMe.speed;
+		if (keysEnum.UP in keys && newMe.y > 0) newMe.y -= newMe.speed;
+		if (keysEnum.DOWN in keys && newMe.y < config.height - config.carSize)
+			newMe.y += newMe.speed;
+
+		if (newMe.x != me.x || newMe.y != me.y) socket.emit('move', newMe);
+		users[me.id] = newMe;
+	}
+
 	// Draw cars
 	Object.values(users).map(box => box.draw(context));
 
@@ -68,16 +84,6 @@ function init() {
 
 		e.preventDefault();
 		keys[e.key] = true;
-
-		// Change car position according to pressed keys
-		if (keysEnum.LEFT in keys && me.x > 0) me.x -= me.speed;
-		if (keysEnum.RIGHT in keys && me.x < config.width - config.carSize)
-			me.x += me.speed;
-		if (keysEnum.UP in keys && me.y > 0) me.y -= me.speed;
-		if (keysEnum.DOWN in keys && me.y < config.height - config.carSize)
-			me.y += me.speed;
-
-		socket.emit('move', me);
 	});
 
 	// Hnadle arrow key release
