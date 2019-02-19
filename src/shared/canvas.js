@@ -1,11 +1,12 @@
 import c from './config';
+
 const config = c();
 
 // Random function
 const random = () =>
 	new Array(config.randomCount)
 		.fill(0)
-		.map(_ => Math.random())
+		.map(Math.random)
 		.reduce((a, v) => a + v, 0) / config.randomCount;
 const r = (min, max) => Math.round(random() * (max - min) + min);
 
@@ -18,7 +19,9 @@ let previousEntry;
 // Determine wheter to turn left, right or keep straight
 const getTurn = () => {
 	const turnDeterminator = Math.random();
-	return turnDeterminator < 1 / 3 ? -1 : turnDeterminator < 2 / 3 ? 0 : 1;
+	if (turnDeterminator < 1 / 3) return -1;
+	if (turnDeterminator < 2 / 3) return 0;
+	return 1;
 };
 
 // Generate block of entries with one direction
@@ -35,7 +38,7 @@ const generateBlock = i => {
 		const entry = r(start, end);
 
 		// Save entry to points array
-		if (!previousEntry) points.push({ x: entry, y: y });
+		if (!previousEntry) points.push({ x: entry, y });
 		points.push({ x: entry, y: y + config.entryHeight });
 
 		// Set current entry as previus

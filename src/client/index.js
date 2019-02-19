@@ -1,6 +1,6 @@
 import Box from './blocks/Box';
 import c from '../shared/config';
-import { generateTrack, drawBorder, initCanvas } from '../shared/canvas';
+import { drawBorder, initCanvas } from '../shared/canvas';
 
 const config = c();
 const socket = io('http://localhost:1234');
@@ -63,7 +63,7 @@ function init() {
 	users[me.id] = me;
 
 	// Hande arrow key press
-	addEventListener('keydown', e => {
+	window.addEventListener('keydown', e => {
 		if (Object.values(keysEnum).indexOf(e.key) == -1) return;
 
 		e.preventDefault();
@@ -81,7 +81,7 @@ function init() {
 	});
 
 	// Hnadle arrow key release
-	addEventListener('keyup', e => delete keys[e.key]);
+	window.addEventListener('keyup', e => delete keys[e.key]);
 
 	socket.emit('added', me);
 }
