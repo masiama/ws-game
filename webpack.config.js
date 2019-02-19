@@ -2,7 +2,7 @@ var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (_, argv) => ({
-	entry: './src/client.js',
+	entry: './src/client/index.js',
 	output: {
 		path: path.resolve(__dirname, 'out'),
 		filename: 'client.js',
@@ -14,7 +14,7 @@ module.exports = (_, argv) => ({
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: 'src/index.html',
+			template: 'src/client/index.html',
 			minify: {
 				removeComments: true,
 				collapseWhitespace: true,

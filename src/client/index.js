@@ -1,6 +1,6 @@
 import Box from './blocks/Box';
-import c from './config';
-import { generateTrack, drawBorder, initCanvas } from './canvas';
+import c from '../shared/config';
+import { generateTrack, drawBorder, initCanvas } from '../shared/canvas';
 
 const config = c();
 const socket = io('http://localhost:1234');

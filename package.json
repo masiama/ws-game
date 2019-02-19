@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "npm run prettier && npx webpack && npx babel src/server.js --out-file out/server.js",
-    "watch": "webpack -w & npx babel src/server.js -w --out-file out/server.js",
+    "watch": "webpack -w & npx babel src/server/index.js -w --out-file out/server.js",
     "start": "node out/server.js",
     "prettier": "prettier --write src/*.js",
     "lint": "npx eslint src/*.js"

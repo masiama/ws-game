@@ -1,4 +1,4 @@
-import c from '../config';
+import c from '../../shared/config';
 const config = c();
 
 export default class Box {
