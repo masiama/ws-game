@@ -26,12 +26,11 @@ let me;
 let connected = false;
 let points = [];
 
-socket.on('connect', init);
-
 socket.on('addUser', setUser);
 socket.on('removeUser', id => delete users[id]);
 
 socket.on('allUsers', allUsers => allUsers.map(setUser));
+socket.on('points', p => { points = p; init(); });
 socket.on('move', setUser);
 
 (function loop() {
@@ -50,7 +49,6 @@ function init() {
 	if (connected) return socket.emit('move', me);
 	connected = true;
 
-	points = generateTrack();
 	initCanvas(canvas);
 
 	me = new Box(

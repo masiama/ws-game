@@ -2,6 +2,7 @@ import SocketIO from 'socket.io';
 import express from 'express';
 import { join } from 'path';
 import http from 'http';
+import { generateTrack } from '../shared/canvas';
 
 const PORT = 1234;
 
@@ -16,9 +17,11 @@ app.get('/', sendFile('index.html')).get('/client.js', sendFile('client.js'));
 server.listen(PORT);
 
 const users = {};
+const points = generateTrack();
 
 io.on('connection', socket => {
 	socket.emit('allUsers', Object.values(users));
+	socket.emit('points', points);
 	socket.on('added', data => {
 		users[data.id] = data;
 		socket.broadcast.emit('addUser', data);
