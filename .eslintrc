@@ -1,11 +1,9 @@
 {
 	"parser": "babel-eslint",
-	"plugins": ["prettier", "react", "jsx-a11y", "import"],
+	"plugins": ["prettier", "jsx-a11y", "import"],
 	"extends": [
-		"prettier",
-		"prettier/flowtype",
-		"prettier/react",
-		"airbnb"
+		"airbnb",
+		"prettier"
 	],
 	"rules": {
 		"quotes": ["error", "single"],
