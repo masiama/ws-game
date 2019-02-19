@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "npm run prettier && npx webpack",
+    "build": "yarn prettier && npx webpack",
     "watch": "webpack -w",
     "start": "node out/server.js",
     "prettier": "prettier --write src/**/*.js",
