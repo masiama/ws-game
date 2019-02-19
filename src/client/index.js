@@ -1,4 +1,4 @@
-import Box from './blocks/Box';
+import Box from '../shared/Box';
 import c from '../shared/config';
 import { drawBorder, initCanvas } from '../shared/canvas';
 
@@ -49,18 +49,18 @@ socket.on('move', setUser);
 })();
 
 function init() {
-	if (connected) return socket.emit('move', me);
+	if (connected) {
+		// Handle reconnect
+		me.id = socket.id;
+		users[me.id] = me;
+		return socket.emit('move', me);
+	}
+
+	// 1st connection
 	connected = true;
 
 	initCanvas(canvas);
-
-	me = new Box(
-		socket.id,
-		points[0].x,
-		points[0].y,
-		`hsl(${137.5 * Math.floor(Math.random() * 1000)}deg, 80%, 80%)`,
-	);
-	users[me.id] = me;
+	me = users[socket.id];
 
 	// Hande arrow key press
 	window.addEventListener('keydown', e => {
@@ -82,6 +82,4 @@ function init() {
 
 	// Hnadle arrow key release
 	window.addEventListener('keyup', e => delete keys[e.key]);
-
-	socket.emit('added', me);
 }
