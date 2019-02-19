@@ -1,22 +1,30 @@
-var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var fs = require('fs');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const fs = require('fs');
 
-var nodeModules = {};
+const nodeModules = {};
 fs.readdirSync('node_modules')
 	.filter(x => ['.bin'].indexOf(x) === -1)
 	.forEach(mod => nodeModules[mod] = 'commonjs ' + mod);
 
+const common = argv => ({
+	module: {
+		rules: [
+			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
+		],
+	},
+	optimization: {
+		usedExports: true
+	},
+	mode: argv.mode || 'development',
+});
+const commonPluggins = [new TerserPlugin()];
 module.exports = (_, argv) => ([{
 	entry: './src/client',
 	output: {
 		path: path.resolve(__dirname, 'out'),
 		filename: 'client.js',
-	},
-	module: {
-		rules: [
-			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
-		],
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
@@ -27,8 +35,9 @@ module.exports = (_, argv) => ([{
 				removeScriptTypeAttributes: true,
 			},
 		}),
+		...commonPluggins
 	],
-	mode: argv.mode || 'development',
+	...common(argv)
 }, {
 	entry: './src/server',
 	target: 'node',
@@ -36,11 +45,7 @@ module.exports = (_, argv) => ([{
 		path: path.resolve(__dirname, 'out'),
 		filename: 'server.js',
 	},
-	module: {
-		rules: [
-			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
-		],
-	},
 	externals: nodeModules,
-	mode: argv.mode || 'development',
+	plugins: [...commonPluggins],
+	...common(argv)
 }]);
