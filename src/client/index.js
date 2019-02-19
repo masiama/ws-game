@@ -30,7 +30,10 @@ socket.on('addUser', setUser);
 socket.on('removeUser', id => delete users[id]);
 
 socket.on('allUsers', allUsers => allUsers.map(setUser));
-socket.on('points', p => { points = p; init(); });
+socket.on('points', p => {
+	points = p;
+	init();
+});
 socket.on('move', setUser);
 
 (function loop() {

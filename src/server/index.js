@@ -10,7 +10,8 @@ const app = express();
 const server = http.createServer(app);
 const io = SocketIO(server);
 
-const sendFile = file => (_, res) => res.sendFile(file, { root: join(process.cwd(), 'out') });
+const sendFile = file => (_, res) =>
+	res.sendFile(file, { root: join(process.cwd(), 'out') });
 
 app.get('/', sendFile('index.html')).get('/client.js', sendFile('client.js'));
 

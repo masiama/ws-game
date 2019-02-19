@@ -3,7 +3,7 @@
     "build": "npm run prettier && npx webpack",
     "watch": "webpack -w",
     "start": "node out/server.js",
-    "prettier": "prettier --write src/*.js",
+    "prettier": "prettier --write src/**/*.js",
     "lint": "npx eslint src/*.js"
   },
   "devDependencies": {
