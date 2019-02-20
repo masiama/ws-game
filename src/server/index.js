@@ -25,23 +25,25 @@ const users = {};
 const points = generateTrack();
 
 io.on('connection', socket => {
-	users[socket.id] = new Box(
-		socket.id,
-		points[0].x - config.carSize / 2,
-		points[0].y,
-		`hsl(${137.5 * Math.floor(Math.random() * 1000)}deg, 80%, 80%)`,
-	);
-
-	socket.broadcast.emit('addUser', users[socket.id]);
 	socket.emit('allUsers', Object.values(users));
 	socket.emit('points', points);
 
+	socket.on('createUser', userId => {
+		users[socket.id] = new Box(
+			userId,
+			points[0].x - config.carSize / 2,
+			points[0].y,
+			`hsl(${137.5 * Math.floor(Math.random() * 1000)}deg, 80%, 80%)`,
+		);
+		io.emit('addUser', users[socket.id]);
+	});
+
 	socket.on('move', data => {
-		users[data.id] = data;
+		users[socket.id] = data;
 		socket.broadcast.emit('move', data);
 	});
 	socket.on('disconnect', () => {
+		socket.broadcast.emit('removeUser', users[socket.id].id);
 		delete users[socket.id];
-		socket.broadcast.emit('removeUser', socket.id);
 	});
 });

@@ -15,6 +15,16 @@ const keysEnum = Object.freeze({
 	DOWN: 'ArrowDown',
 });
 
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const string = new Array(10)
+	.fill(0)
+	.map(() => chars.charAt(Math.floor(Math.random() * chars.length)))
+	.join('');
+const userId =
+	Date.now()
+		.toString()
+		.slice(-6) + string;
+
 // Object of all users
 const users = {};
 // Object for pressed keys
@@ -22,26 +32,23 @@ const keys = {};
 
 const setUser = u => (users[u.id] = Box.serialize(u));
 
-let me;
 let connected = false;
 let points = [];
 
+socket.on('connect', init);
 socket.on('addUser', setUser);
 socket.on('removeUser', id => delete users[id]);
 
 socket.on('allUsers', allUsers => allUsers.map(setUser));
-socket.on('points', p => {
-	points = p;
-	init();
-});
+socket.on('points', p => (points = p));
 socket.on('move', setUser);
 
 (function loop() {
 	// Clear canvas
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
-	if (me) {
-		const newMe = Box.serialize(users[me.id]);
+	if (users[userId]) {
+		const newMe = Box.serialize(users[userId]);
 
 		// Change car position according to pressed keys
 		if (keysEnum.LEFT in keys && newMe.x > 0) newMe.x -= newMe.speed;
@@ -51,8 +58,9 @@ socket.on('move', setUser);
 		if (keysEnum.DOWN in keys && newMe.y < config.height - config.carSize)
 			newMe.y += newMe.speed;
 
-		if (newMe.x != me.x || newMe.y != me.y) socket.emit('move', newMe);
-		users[me.id] = newMe;
+		if (newMe.x != users[userId].x || newMe.y != users[userId].y)
+			socket.emit('move', newMe);
+		users[userId] = newMe;
 	}
 
 	// Draw cars
@@ -65,18 +73,13 @@ socket.on('move', setUser);
 })();
 
 function init() {
-	if (connected) {
-		// Handle reconnect
-		me.id = socket.id;
-		users[me.id] = me;
-		return socket.emit('move', me);
-	}
+	// Handle reconnect
+	if (connected) return socket.emit('move', users[userId]);
 
 	// 1st connection
 	connected = true;
 
 	initCanvas(canvas);
-	me = users[socket.id];
 
 	// Hande arrow key press
 	window.addEventListener('keydown', e => {
@@ -88,4 +91,6 @@ function init() {
 
 	// Hnadle arrow key release
 	window.addEventListener('keyup', e => delete keys[e.key]);
+
+	socket.emit('createUser', userId);
 }
