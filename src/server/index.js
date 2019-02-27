@@ -21,6 +21,7 @@ app.get('/', sendFile('index.html')).get('/client.js', sendFile('client.js'));
 
 server.listen(PORT);
 
+let moves = {};
 const users = {};
 const points = generateTrack();
 
@@ -39,11 +40,18 @@ io.on('connection', socket => {
 	});
 
 	socket.on('move', data => {
-		users[socket.id] = data;
-		socket.broadcast.emit('move', data);
+		if (!users[socket.id]) users[socket.id] = {};
+		Object.assign(users[socket.id], data);
+		moves[data.id] = { x: data.x, y: data.y };
 	});
 	socket.on('disconnect', () => {
 		socket.broadcast.emit('removeUser', users[socket.id].id);
 		delete users[socket.id];
 	});
 });
+
+setInterval(() => {
+	if (!Object.keys(moves).length) return;
+	io.emit('moves', moves);
+	moves = {};
+}, 1000 / 60);

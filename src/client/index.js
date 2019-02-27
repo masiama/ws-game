@@ -3,7 +3,7 @@ import c from '../shared/config';
 import { drawBorder, initCanvas } from '../shared/canvas';
 
 const config = c();
-const socket = io('http://localhost:1234');
+const socket = io(`http://${document.location.hostname}:1234`);
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
@@ -41,7 +41,9 @@ socket.on('removeUser', id => delete users[id]);
 
 socket.on('allUsers', allUsers => allUsers.map(setUser));
 socket.on('points', p => (points = p));
-socket.on('move', setUser);
+socket.on('moves', moves => {
+	Object.keys(moves).forEach(uid => Object.assign(users[uid], moves[uid]));
+});
 
 (function loop() {
 	// Clear canvas
@@ -59,7 +61,7 @@ socket.on('move', setUser);
 			newMe.y += newMe.speed;
 
 		if (newMe.x != users[userId].x || newMe.y != users[userId].y)
-			socket.emit('move', newMe);
+			socket.emit('move', { id: userId, x: newMe.x, y: newMe.y });
 		users[userId] = newMe;
 	}
 
