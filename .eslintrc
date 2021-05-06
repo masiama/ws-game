@@ -1,21 +1,7 @@
 {
 	"parser": "babel-eslint",
-	"plugins": ["prettier", "jsx-a11y", "import"],
-	"extends": [
-		"airbnb",
-		"prettier"
-	],
+	"extends": "eslint:recommended",
 	"rules": {
-		"quotes": ["error", "single"],
-		"arrow-parens": ["error", "as-needed"],
-		"indent": ["error", "tab"],
-		"no-tabs": ["error", { "allowIndentationTabs": true }],
-		"eqeqeq": ["off"],
-		"no-undef": ["off"],
-		"no-return-assign": ["off"],
-		"consistent-return": ["off"],
-		"no-plusplus": ["off"],
-		"no-param-reassign": ["off"],
-		"no-use-before-define": ["error", { "functions": false, "classes": false }]
+		"no-undef": "off"
 	}
 }
