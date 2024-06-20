@@ -1,7 +1,0 @@
-{
-	"parser": "@babel/eslint-parser",
-	"extends": "eslint:recommended",
-	"rules": {
-		"no-undef": "off"
-	}
-}
