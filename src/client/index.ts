@@ -1,19 +1,20 @@
-import Box from "../shared/Box";
-import c from "../shared/config";
-import { drawBorder, initCanvas } from "../shared/canvas";
+import Box from "../shared/Box.ts";
+import { config, emit, type BoxObject, type Point } from "../shared/index.ts";
+import { drawBorder, initCanvas } from "../shared/canvas.ts";
+import { assert } from "../shared/assert.ts";
 
-const config = c();
-const socket = io(`http://${document.location.hostname}:1234`);
+const socket = new WebSocket(`http://${document.location.hostname}:1234`);
 const canvas = document.querySelector("canvas");
+assert(canvas !== null, "Canvas element not found");
 const context = canvas.getContext("2d");
+assert(context !== null, "Canvas context not found");
 
-// Enumeration of arrow keys
-const keysEnum = Object.freeze({
+const keysEnum = {
   LEFT: "ArrowLeft",
   RIGHT: "ArrowRight",
   UP: "ArrowUp",
   DOWN: "ArrowDown",
-});
+};
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const string = Array.from({ length: 10 })
@@ -23,23 +24,45 @@ const string = Array.from({ length: 10 })
 const userId = Date.now().toString().slice(-6) + string;
 
 // Object of all users
-const users = {};
+const users: Record<string, Box> = {};
 // Object for pressed keys
-const keys = {};
+const keys: Record<string, boolean> = {};
 
-const setUser = (u) => (users[u.id] = Box.serialize(u));
+const setUser = (u: BoxObject) => (users[u.id] = Box.serialize(u));
 
 let connected = false;
-let points = [];
+let points: Point[] = [];
 
-socket.on("connect", init);
-socket.on("addUser", setUser);
-socket.on("removeUser", (id) => delete users[id]);
+socket.addEventListener("open", init);
 
-socket.on("allUsers", (allUsers) => allUsers.map(setUser));
-socket.on("points", (p) => (points = p));
-socket.on("moves", (moves) => {
-  Object.keys(moves).forEach((uid) => Object.assign(users[uid], moves[uid]));
+socket.addEventListener("message", (event) => {
+  const { event: eventName, data } = JSON.parse(event.data);
+  assert(typeof eventName === "string", "Event name is undefined");
+
+  switch (eventName) {
+    case "allUsers":
+      data.forEach(setUser);
+      break;
+    case "points":
+      points = data;
+      break;
+    case "addUser":
+      setUser(data);
+      break;
+    case "removeUser":
+      delete users[data];
+      break;
+    case "moves":
+      for (const id in data) {
+        if (users[id]) {
+          users[id].x = data[id].x;
+          users[id].y = data[id].y;
+        }
+      }
+      break;
+    default:
+      console.log(`Unknown event: ${eventName}`);
+  }
 });
 
 (function loop() {
@@ -56,7 +79,7 @@ socket.on("moves", (moves) => {
     if (keysEnum.DOWN in keys && newMe.y < config.height - config.carSize) newMe.y += newMe.speed;
 
     if (newMe.x != users[userId].x || newMe.y != users[userId].y)
-      socket.emit("move", { id: userId, x: newMe.x, y: newMe.y });
+      emit(socket, "move", { id: userId, x: newMe.x, y: newMe.y });
     users[userId] = newMe;
   }
 
@@ -70,8 +93,9 @@ socket.on("moves", (moves) => {
 })();
 
 function init() {
+  assert(canvas !== null, "Canvas element not found");
   // Handle reconnect
-  if (connected) return socket.emit("move", users[userId]);
+  if (connected) return emit(socket, "move", users[userId]);
 
   // 1st connection
   connected = true;
@@ -89,5 +113,5 @@ function init() {
   // Hnadle arrow key release
   window.addEventListener("keyup", (e) => delete keys[e.key]);
 
-  socket.emit("createUser", userId);
+  emit(socket, "createUser", userId);
 }

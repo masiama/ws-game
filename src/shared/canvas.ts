@@ -1,6 +1,5 @@
-import c from "./config";
-
-const config = c();
+import { assert } from "./assert.ts";
+import { config, type Point } from "./index.ts";
 
 // Random function
 const random = () =>
@@ -8,13 +7,13 @@ const random = () =>
     .fill(0)
     .map(Math.random)
     .reduce((a, v) => a + v, 0) / config.randomCount;
-const r = (min, max) => Math.round(random() * (max - min) + min);
+const r = (min: number, max: number) => Math.round(random() * (max - min) + min);
 
 // Init start and end of random range
 let start = 0;
 let end = config.width - config.entryWidth / 2;
 
-let previousEntry;
+let previousEntry: number;
 
 // Determine wheter to turn left, right or keep straight
 const getTurn = () => {
@@ -25,9 +24,9 @@ const getTurn = () => {
 };
 
 // Generate block of entries with one direction
-const generateBlock = (i) => {
+const generateBlock = (i: number) => {
   const turn = getTurn();
-  const points = [];
+  const points: Point[] = [];
   for (let j = 0; j < config.blockLength; j++) {
     // Get y coordinate of entry
     const y = (i * config.blockLength + j) * config.entryHeight;
@@ -69,41 +68,44 @@ const generateBlock = (i) => {
 };
 
 export function generateTrack() {
-  let points = [];
+  let points: Point[] = [];
   for (let i = 0; i <= Math.round(config.rows / config.blockLength); i++)
     points = points.concat(generateBlock(i));
   return points;
 }
 
 // Draw border by points
-export function drawBorder(ctx, points, modifier = 1) {
+export function drawBorder(ctx: CanvasRenderingContext2D, points: Point[], modifier = 1) {
   if (points.length < 3) return;
   ctx.beginPath();
   ctx.strokeStyle = `rgb(${config.borderColor.join(",")})`;
 
   const offset = (config.entryWidth / 2) * modifier;
-
+  assert(points[0] !== undefined, "More than 2 points are required to draw border");
   ctx.moveTo(points[0].x + offset, points[0].y);
 
   let k = 1;
-
+  let p: Point | undefined;
+  let pNext: Point | undefined;
   for (; k < points.length - 2; k++) {
-    const xc = (points[k].x + points[k + 1].x) / 2 + offset;
-    const yc = (points[k].y + points[k + 1].y) / 2;
-    ctx.quadraticCurveTo(points[k].x + offset, points[k].y, xc, yc);
+    p = points[k];
+    pNext = points[k + 1];
+    assert(
+      p !== undefined && pNext !== undefined,
+      "More than 2 points are required to draw border",
+    );
+    const xc = (p.x + pNext.x) / 2 + offset;
+    const yc = (p.y + pNext.y) / 2;
+    ctx.quadraticCurveTo(p.x + offset, p.y, xc, yc);
   }
+  assert(p !== undefined && pNext !== undefined, "More than 2 points are required to draw border");
 
-  ctx.quadraticCurveTo(
-    points[k].x + offset,
-    points[k].y,
-    points[k + 1].x + offset,
-    points[k + 1].y,
-  );
+  ctx.quadraticCurveTo(p.x + offset, p.y, pNext.x + offset, pNext.y);
 
   ctx.stroke();
 }
 
-export function initCanvas(canvas) {
+export function initCanvas(canvas: HTMLCanvasElement) {
   canvas.width = config.width;
   canvas.height = config.height;
   canvas.style.background = `rgb(${config.bg.join(",")})`;
