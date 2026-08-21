@@ -1,10 +1,10 @@
-import c from './config';
+import c from "./config";
 
 const config = c();
 
 // Random function
 const random = () =>
-  new Array(config.randomCount)
+  Array.from({ length: config.randomCount })
     .fill(0)
     .map(Math.random)
     .reduce((a, v) => a + v, 0) / config.randomCount;
@@ -25,7 +25,7 @@ const getTurn = () => {
 };
 
 // Generate block of entries with one direction
-const generateBlock = i => {
+const generateBlock = (i) => {
   const turn = getTurn();
   const points = [];
   for (let j = 0; j < config.blockLength; j++) {
@@ -56,18 +56,12 @@ const generateBlock = i => {
     // Keep straight
     if (turn == 0) {
       start = Math.max(0, entry - config.entryWidth / 2);
-      end = Math.min(
-        entry + config.entryWidth / 2,
-        config.width - config.entryWidth,
-      );
+      end = Math.min(entry + config.entryWidth / 2, config.width - config.entryWidth);
     }
     // Keep turning right
     if (turn == 1) {
       start = Math.max(0, entry);
-      end = Math.min(
-        entry + config.entryWidth / 2,
-        config.width - config.entryWidth,
-      );
+      end = Math.min(entry + config.entryWidth / 2, config.width - config.entryWidth);
     }
     // To make turn sharper change entryWidth / 2 to entryWidth
   }
@@ -85,7 +79,7 @@ export function generateTrack() {
 export function drawBorder(ctx, points, modifier = 1) {
   if (points.length < 3) return;
   ctx.beginPath();
-  ctx.strokeStyle = `rgb(${config.borderColor.join(',')})`;
+  ctx.strokeStyle = `rgb(${config.borderColor.join(",")})`;
 
   const offset = (config.entryWidth / 2) * modifier;
 
@@ -112,5 +106,5 @@ export function drawBorder(ctx, points, modifier = 1) {
 export function initCanvas(canvas) {
   canvas.width = config.width;
   canvas.height = config.height;
-  canvas.style.background = `rgb(${config.bg.join(',')})`;
+  canvas.style.background = `rgb(${config.bg.join(",")})`;
 }
